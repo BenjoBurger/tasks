@@ -3,8 +3,11 @@ package se.edu.streamdemo;
 import se.edu.streamdemo.data.DataManager;
 import se.edu.streamdemo.task.Deadline;
 import se.edu.streamdemo.task.Task;
+import se.edu.streamdemo.task.TaskNameComparator;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.stream.Collectors;
 
 public class Main {
     public static void main(String[] args) {
@@ -16,13 +19,13 @@ public class Main {
 //        printAllData(tasksData);
 //        printAllDetailsUsingStream(tasksData);
 
-//        System.out.println("Printing deadlines ...");
-//        printDeadlines(tasksData);
-//        printDeadlineUsingStreams(tasksData);
+        System.out.println("Printing deadlines ...");
+        printDeadlines(tasksData);
+        printDeadlineUsingStreams(tasksData);
 
-        System.out.println("Total number of deadlines: " + countDeadlines(tasksData));
-        System.out.println("Total number of deadlines using stream: "
-                + countDeadlinesUsingStream(tasksData));
+//        System.out.println("Total number of deadlines: " + countDeadlines(tasksData));
+//        System.out.println("Total number of deadlines using stream: "
+//                + countDeadlinesUsingStream(tasksData));
     }
 
     private static int countDeadlines(ArrayList<Task> tasksData) {
@@ -60,7 +63,17 @@ public class Main {
     public static void printDeadlineUsingStreams(ArrayList<Task> tasks) {
         System.out.println("Printing using streams ...");
         tasks.stream()
-                .filter((t) -> t instanceof Deadline).forEach(System.out::println);
+                .filter((t) -> t instanceof Deadline)
+                .sorted((t1, t2) -> t1.getDescription().compareToIgnoreCase(t2.getDescription()))
+                .forEach(System.out::println);
+    }
+
+    public static ArrayList<Task> filterByString(ArrayList<Task> tasks, String filterString) {
+        ArrayList<Task> filterResult = (ArrayList<Task>) tasks.stream()
+                .filter((t) -> t.getDescription().contains(filterString))
+                .collect(Collectors.toList());
+
+        return filterResult;
     }
 
     public static int countDeadlinesUsingStream(ArrayList<Task> tasks) {
